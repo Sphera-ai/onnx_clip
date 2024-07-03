@@ -106,7 +106,8 @@ class OnnxClip:
 
 
     def __init__(
-        self, model: str = "ViT-B/32", batch_size: Optional[int] = None, silent_download: bool = False
+        self, model: str = "ViT-B/32", batch_size: Optional[int] = None, silent_download: bool = False,
+        cache_dir: Optional[str] = None
     ):
         """
         Instantiates the model and required encoding classes.
@@ -121,6 +122,7 @@ class OnnxClip:
                 passing large amounts of data (perhaps ~100 or more).
             silent_download: If True, the function won't show a warning in
                 case when the models need to be downloaded from the S3 bucket.
+            cache_dir: If provided, the models will be downloaded to / loaded from this location
         """
         allowed_models = ["ViT-B/32", "RN50"]
         if model not in allowed_models:
@@ -129,7 +131,7 @@ class OnnxClip:
             self.embedding_size = 512
         elif model == "RN50":
             self.embedding_size = 1024
-        self.image_model, self.text_model = self._load_models(model, silent_download)
+        self.image_model, self.text_model = self._load_models(model, silent_download, cache_dir=cache_dir)
         self._tokenizer = Tokenizer()
         self._preprocessor = Preprocessor()
         self._batch_size = batch_size
@@ -143,6 +145,7 @@ class OnnxClip:
     def _load_models(
         model: str,
         silent: bool,
+        cache_dir: Optional[str]
     ) -> Tuple[ort.InferenceSession, ort.InferenceSession]:
         """
         Grabs the ONNX implementation of CLIP's model :
@@ -150,6 +153,8 @@ class OnnxClip:
 
         We have exported it to ONNX to remove the dependency on `torch` and
         `torchvision`.
+
+        cache_dir: If provided, the models will be downloaded to / loaded from this location
         """
         if model == "ViT-B/32":
             IMAGE_MODEL_FILE = "clip_image_model_vitb32.onnx"
@@ -159,11 +164,14 @@ class OnnxClip:
             TEXT_MODEL_FILE = "clip_text_model_rn50.onnx"
         else:
             raise ValueError(f"Unexpected model {model}. No `.onnx` file found.")
-        base_dir = os.path.dirname(os.path.abspath(__file__))
+        if cache_dir is None:
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            cache_dir = os.path.join(base_dir, "data")
+
 
         models = []
         for model_file in [IMAGE_MODEL_FILE, TEXT_MODEL_FILE]:
-            path = os.path.join(base_dir, "data", model_file)
+            path = os.path.join(cache_dir, model_file)
             models.append(OnnxClip._load_model(path, silent))
 
         return models[0], models[1]
