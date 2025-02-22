@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "onnx_clip"
-version = "4.0.1"
+version = "4.0.2"
 description = "CLIP with ONNX Runtime and without PyTorch dependencies."
 readme = "README.md"
 authors = ["Lakera AI <dev@lakera.ai>"]
@@ -14,18 +14,30 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-[project.urls]
-"Homepage" = "https://github.com/lakeraai/onnx_clip"
+[project]
+name = "onnx_clip"
+version = "4.0.2"
+description = "CLIP with ONNX Runtime and without PyTorch dependencies."
+readme = "README.md"
+maintainers = [{ name = "Lakera AI", email = "dev@lakera.ai" }]
+authors = [{ name = "Lakera AI", email = "dev@lakera.ai" }]
+urls.Homepage = "https://github.com/lakeraai/onnx_clip"
+urls.Repository = "https://github.com/lakeraai/onnx_clip"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-numpy = "^1.18.0"
-opencv-python-headless = "^4.0.1"
+python = ">=3.8"
+numpy = ">=1.18.0"
+opencv-python-headless = ">=4.0.1"
 onnxruntime = ">=1.4.0"
-pillow = "^10.1.0"
+pillow = ">=10.1.0"
 ftfy = "^6.0.3"
 regex = "*"
-requests = "^2.26.0"
+requests = ">=2.26.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
